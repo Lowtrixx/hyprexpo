@@ -447,6 +447,11 @@ int main() {
     expect(!renderSource.empty(), "src/OverviewRender.cpp can be read from repo root");
     const auto closeOverview = extractFunction(renderSource, "void COverview::close(bool switchToSelection) {");
     expect(!closeOverview.empty(), "overview close function exists");
+    expectOrder(closeOverview, "if (TARGET && TARGET != MON)", "const auto targetSize", "foreign selection bypasses the source zoom");
+    expectOrder(closeOverview, "destroyAllOverviews();", "Config::Actions::changeWorkspace(SELECTED)", "foreign selection changes focus after all sessions are removed");
+    expectContains(closeOverview, "overviewForSession(key, generation)", "deferred selection cannot destroy a replacement session");
+    expectContains(mainSource, "Hyprexpo::Capture::isCapturingWorkspacePreview()", "owner captures bypass every overview session");
+
     expect(closeOverview.find("resetSubmapIfNeeded();") != std::string::npos,
            "normal overview close restores the captured submap");
     expect(overviewConstructor.find("emptyTilesSelectable = skipEmpty;") != std::string::npos,
