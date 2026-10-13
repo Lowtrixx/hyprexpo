@@ -163,6 +163,7 @@ void COverview::close(bool switchToSelection) {
             destroyAllOverviews();
             if (std::ranges::find(State::monitorState()->monitors(), TARGET) == State::monitorState()->monitors().end())
                 return;
+            TARGET->setSpecialWorkspace(0);
             const auto CHANGE = Config::Actions::changeWorkspace(SELECTED);
             if (!CHANGE) {
                 Log::logger->log(Log::ERR, "[hyprexpo] failed to select foreign workspace: {}", CHANGE.error().message);
