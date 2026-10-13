@@ -184,11 +184,12 @@ void COverview::close(bool switchToSelection) {
         const auto key = overviewMonitorKey(MON);
         const auto generation = m_sessionGeneration;
         // Leave the input/animation stack before destroying sessions or changing focus.
-        g_pEventLoopManager->doLater([key, generation, SELECTED, TARGET] {
+        g_pEventLoopManager->doLater([key, generation, SELECTED] {
             if (!overviewForSession(key, generation))
                 return;
             destroyAllOverviews();
-            if (std::ranges::find(State::monitorState()->monitors(), TARGET) == State::monitorState()->monitors().end())
+            const auto TARGET = SELECTED->m_monitor.lock();
+            if (!TARGET || std::ranges::find(State::monitorState()->monitors(), TARGET) == State::monitorState()->monitors().end())
                 return;
             TARGET->setSpecialWorkspace(0);
             const auto CHANGE = Config::Actions::changeWorkspace(SELECTED);
