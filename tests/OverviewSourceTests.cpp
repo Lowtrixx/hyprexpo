@@ -452,6 +452,10 @@ int main() {
     expectOrder(closeOverview, "std::ranges::find(State::monitorState()->monitors(), TARGET)", "TARGET->setSpecialWorkspace(0);", "foreign selection hides a live target monitor's special workspace");
     expectOrder(closeOverview, "TARGET->setSpecialWorkspace(0);", "Config::Actions::changeWorkspace(SELECTED)", "foreign selection hides the target special workspace before switching");
     expectContains(closeOverview, "overviewForSession(key, generation)", "deferred selection cannot destroy a replacement session");
+    const auto deferredSelection = extractFunction(closeOverview, "g_pEventLoopManager->doLater(");
+    expectOrder(deferredSelection, "destroyAllOverviews();", "SELECTED->m_monitor.lock()", "deferred selection resolves current ownership after teardown");
+    expectContains(deferredSelection, "if (!TARGET ||", "deferred selection rejects a missing owner");
+    expectAbsent(deferredSelection, "SELECTED, TARGET", "deferred selection never captures a stale owner");
     expectContains(mainSource, "Hyprexpo::Capture::isCapturingWorkspacePreview()", "owner captures bypass every overview session");
 
     expect(closeOverview.find("resetSubmapIfNeeded();") != std::string::npos,

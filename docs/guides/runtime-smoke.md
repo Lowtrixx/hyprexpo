@@ -111,3 +111,22 @@ artifact in the desktop session.
 6. Confirm window dragging and `hyprexpo:move_window` are refused in the opt-in
    grid; close/reopen/reload/unload must leave the compositor responsive and
    `configerrors` empty. Test other monitor scales/transforms separately.
+
+### Deferred cross-monitor selection regressions
+
+In the disposable two-output grid fixture above, set
+`binds:hide_special_on_workspace_change = false`, leave a populated special
+workspace open on WAYLAND-2, and select workspace 6 from WAYLAND-1. Check that
+WAYLAND-2 has `specialWorkspace.id = 0`, workspace 6 is active, and focus/cursor
+land there. Cancel and local selection must leave the foreign special open.
+
+Exercise a workspace ownership change before the idle callback with one IPC
+batch against the nested instance:
+
+```sh
+hyprctl -i <nested-instance> --batch 'dispatch hyprexpo:kb_selectn 6 ; dispatch moveworkspacetomonitor 6 WAYLAND-1'
+```
+
+The overview must already be open on WAYLAND-1 with workspace 6 on WAYLAND-2.
+After the batch, workspace 6, focus and cursor must all be on WAYLAND-1; the
+callback must not clear a special workspace or warp to the previous owner.
