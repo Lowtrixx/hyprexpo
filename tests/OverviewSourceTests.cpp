@@ -450,6 +450,8 @@ int main() {
     expect(!closeOverview.empty(), "overview close function exists");
     expectOrder(closeOverview, "if (TARGET && TARGET != MON)", "const auto targetSize", "foreign selection bypasses the source zoom");
     expectOrder(closeOverview, "destroyAllOverviews();", "Config::Actions::changeWorkspace(SELECTED)", "foreign selection changes focus after all sessions are removed");
+    expectOrder(closeOverview, "std::ranges::find(State::monitorState()->monitors(), TARGET)", "TARGET->setSpecialWorkspace(0);", "foreign selection hides a live target monitor's special workspace");
+    expectOrder(closeOverview, "TARGET->setSpecialWorkspace(0);", "Config::Actions::changeWorkspace(SELECTED)", "foreign selection hides the target special workspace before switching");
     expectContains(closeOverview, "overviewForSession(key, generation)", "deferred selection cannot destroy a replacement session");
     expectContains(mainSource, "Hyprexpo::Capture::isCapturingWorkspacePreview()", "owner captures bypass every overview session");
     const auto foreignDamage = extractFunction(renderSource, "void COverview::onSourceMonitorDamage(");
