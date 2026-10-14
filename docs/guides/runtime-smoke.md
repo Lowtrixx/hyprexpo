@@ -111,7 +111,6 @@ artifact in the desktop session.
 6. Confirm window dragging and `hyprexpo:move_window` are refused in the opt-in
    grid; close/reopen/reload/unload must leave the compositor responsive and
    `configerrors` empty. Test other monitor scales/transforms separately.
-
 7. Keep the overview open on WAYLAND-1 while changing the visible content of a
    window on WAYLAND-2, for example play a video with mpv. Tile 6 must change
    without moving the cursor, switching workspaces, or reopening the overview.
